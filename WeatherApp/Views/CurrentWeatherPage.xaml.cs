@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WeatherApp.Helper;
 using WeatherApp.Models;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -17,10 +18,46 @@ namespace WeatherApp.Views
         public CurrentWeatherPage()
         {
             InitializeComponent();
-            GetWeatherInfo();
+            GetCoordinates();
         }
 
         private string Location { get; set; } = "Minsk";
+        private double Latitude { get; set; }
+        public double Longitude { get; set; }
+
+
+        private async void GetCoordinates()
+        {
+            try
+            {
+                var request = new GeolocationRequest(GeolocationAccuracy.Best);
+                var location = await Geolocation.GetLocationAsync(request);
+
+                if (location != null)
+                {
+                    Latitude = location.Latitude;
+                    Longitude = location.Longitude;
+                    Location = await GetCity(location);
+
+                    GetWeatherInfo();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+            }
+        }
+
+        private async Task<string> GetCity(Location location)
+        {
+            var places = await Geocoding.GetPlacemarksAsync(location);
+            var currentPlace = places?.FirstOrDefault();
+
+            if (currentPlace != null)
+                return $"{currentPlace.Locality}, {currentPlace.CountryName}";
+
+            return null;
+        }
 
         private async void GetWeatherInfo()
         {
