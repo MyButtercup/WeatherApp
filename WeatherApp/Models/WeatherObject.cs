@@ -56,8 +56,8 @@ namespace WeatherApp.Models
 
     public class Coord
     {
-        public int lon { get; set; }
-        public int lat { get; set; }
+        public double lon { get; set; }
+        public double lat { get; set; }
     }
 
     public class Main
@@ -103,5 +103,4 @@ namespace WeatherApp.Models
         public string description { get; set; }
         public string icon { get; set; }
     }
-
 }
